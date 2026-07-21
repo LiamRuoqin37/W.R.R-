@@ -110,80 +110,97 @@ def init_db():
 @app.route("/add-authorized-operator", methods=["POST"])
 #@jwt_required()  Commented out, for debugging purposes.
 def add_authorized_operator():
-    data = request.get_json()
-    conn = sqlite3.connect(ROLLS_DB_PATH)
+    try:
+        data = request.get_json()
+        conn = sqlite3.connect(ROLLS_DB_PATH)
 
-    #Avoid duplicate operators
-    existing_fullname = conn.execute("SELECT * FROM authorized_operators WHERE full_name = ?", (data["full_name"].upper(), )).fetchone()
-    if existing_fullname is not None: return jsonify({"Message" : "Full Name already registered."}), 400
+        #Avoid duplicate operators
+        existing_fullname = conn.execute("SELECT * FROM authorized_operators WHERE full_name = ?", (data["full_name"].upper(), )).fetchone()
+        if existing_fullname is not None: return jsonify({"Message" : "Full Name already registered."}), 400
 
-    conn.execute("INSERT INTO authorized_operators (full_name) VALUES (?)", (data["full_name"].upper(), )) 
-    #For above, sqlite3.ProgrammingError: Incorrect number of bindings supplied. The current statement uses 1, and there are 10 supplied. ERROR if u didnt make data["fullname "] thingy as tuple
-        
+        conn.execute("INSERT INTO authorized_operators (full_name) VALUES (?)", (data["full_name"].upper(), )) 
+        #For above, sqlite3.ProgrammingError: Incorrect number of bindings supplied. The current statement uses 1, and there are 10 supplied. ERROR if u didnt make data["fullname "] thingy as tuple
+            
 
-    conn.commit()
-    conn.close()
-    return jsonify({"Message": "Operator Authorized", "full_name": data["full_name"].upper()})
+        conn.commit()
+        conn.close()
+        return jsonify({"Message": "Operator Authorized", "full_name": data["full_name"].upper()})
+
+    except KeyError as e:
+        return jsonify({"error" : f"Missing required field: {e}"}, 400)  #existinf_full name dadada that stuff, if send request w/p full_name then error.
+    except Exception as e:
+        return jsonify({"error" : f"Server error: {e}"}), 500
+
 
 @app.route("/add-operator", methods = ["POST"])
 #@jwt_required()  Commented out, for debugging purposes.
 def add_operator():
-    data = request.get_json()
-    conn = sqlite3.connect(ROLLS_DB_PATH)
+    try:
+        data = request.get_json()
+        conn = sqlite3.connect(ROLLS_DB_PATH)
 
-    #Need to make sure to block duplicate usernames.
-    existing_username =  conn.execute("SELECT * FROM operator_login WHERE username = ?", ( data["username"], ) ).fetchone() #fetchone returns one row from sql or none if no row exists
-    
-    if existing_username is not None: return jsonify({"message" : "Username already taken/registered." }), 400
+        #Need to make sure to block duplicate usernames.
+        existing_username =  conn.execute("SELECT * FROM operator_login WHERE username = ?", ( data["username"], ) ).fetchone() #fetchone returns one row from sql or none if no row exists
         
+        if existing_username is not None: return jsonify({"message" : "Username already taken/registered." }), 400
+            
 
-    """
-    Right now your operator_login table stores passwords as plain text. So if someone opened your rolls.db file they'd see everyone's passwords directly.
-    Hashing means you run the password through a one-way scrambler before storing it. So instead of storing "password123" you store something like "$2b$12$eImiTXuWVxfM37uY4JANjQ...". You can never reverse it back to the original.
-    When someone logs in, you hash what they typed and compare the two hashes. If they match, correct password.
-    bcrypt is just the library that does the scrambling. One line to hash, one line to check.
-    """
-    #Hashing/encrypting the password.
-    hashed_password = bcrypt.hashpw(data["password"].encode("utf-8"), bcrypt.gensalt())
+        """
+        Right now your operator_login table stores passwords as plain text. So if someone opened your rolls.db file they'd see everyone's passwords directly.
+        Hashing means you run the password through a one-way scrambler before storing it. So instead of storing "password123" you store something like "$2b$12$eImiTXuWVxfM37uY4JANjQ...". You can never reverse it back to the original.
+        When someone logs in, you hash what they typed and compare the two hashes. If they match, correct password.
+        bcrypt is just the library that does the scrambling. One line to hash, one line to check.
+        """
+        #Hashing/encrypting the password.
+        hashed_password = bcrypt.hashpw(data["password"].encode("utf-8"), bcrypt.gensalt())
 
-    #Block duplicate account creation for operator
-    block_duplicate = conn.execute('SELECT * FROM operator_login WHERE full_name = ?', (data["full_name"].upper(), )).fetchone()
-    if block_duplicate is not None : return jsonify ({"message" : "Opeator already has an account."}), 400
+        #Block duplicate account creation for operator
+        block_duplicate = conn.execute('SELECT * FROM operator_login WHERE full_name = ?', (data["full_name"].upper(), )).fetchone()
+        if block_duplicate is not None : return jsonify ({"message" : "Opeator already has an account."}), 400
 
-    #If username is has not been made yet, then implement the login.
-    conn.execute("INSERT INTO operator_login (full_name, username, password, crew, shift) VALUES (?,?,?,?,?)", ( data["full_name"].upper(), data["username"] ,
-                                                                                                          hashed_password, data["crew"], data["shift"]) )
+        #If username is has not been made yet, then implement the login.
+        conn.execute("INSERT INTO operator_login (full_name, username, password, crew, shift) VALUES (?,?,?,?,?)", ( data["full_name"].upper(), data["username"] ,
+                                                                                                            hashed_password, data["crew"], data["shift"]) )
 
-    conn.commit()
-    conn.close()
-    return jsonify( {"Message": "Operator Added"})
+        conn.commit()
+        conn.close()
+        return jsonify( {"Message": "Operator Added"})
+    except KeyError as e:
+        return jsonify({"error": f"Missing required field {e}"}), 400
+    except Exception as e:
+        return jsonify({"error" : f"Server error: {e}"}) , 500
 
 @app.route("/login", methods = ["POST"])
 def login():
-    data = request.get_json()
-    conn = sqlite3.connect(ROLLS_DB_PATH)
-    conn.row_factory = sqlite3.Row #Need to make row because username_check["password"]
-    
-    #Check to see if username and login matches.
-    username_check = conn.execute("SELECT * FROM operator_login WHERE username = ?", 
-        (data["username"], )).fetchone()
-    if username_check is None: return jsonify ( {"Message" : "Wrong username." } ) , 400
+    try:
+        data = request.get_json()
+        conn = sqlite3.connect(ROLLS_DB_PATH)
+        conn.row_factory = sqlite3.Row #Need to make row because username_check["password"]
+        
+        #Check to see if username and login matches.
+        username_check = conn.execute("SELECT * FROM operator_login WHERE username = ?", 
+            (data["username"], )).fetchone()
+        if username_check is None: return jsonify ( {"Message" : "Wrong username." } ) , 400
 
-    if not bcrypt.checkpw(data["password"].encode("utf-8"), username_check["password"]):
-        return jsonify ({"message" : "Wrong password"}), 400
+        if not bcrypt.checkpw(data["password"].encode("utf-8"), username_check["password"]):
+            return jsonify ({"message" : "Wrong password"}), 400
 
-    #check if operator's  "full_name" exists in "authorized_operators"
-    #Go into operator login table find the row where username column matches whatever was sent in the request.  
-    #Fetchone() grab that one matching row or none if nothing matched
+        #check if operator's  "full_name" exists in "authorized_operators"
+        #Go into operator login table find the row where username column matches whatever was sent in the request.  
+        #Fetchone() grab that one matching row or none if nothing matched
 
-    #Check if operator is authorized.
-    authorized_operator = conn.execute("SELECT * FROM authorized_operators WHERE full_name = ?", (username_check["full_name"],)  ).fetchone()
-    if authorized_operator is None: return jsonify ( {"Message" : "Operator not registered."} ), 400
+        #Check if operator is authorized.
+        authorized_operator = conn.execute("SELECT * FROM authorized_operators WHERE full_name = ?", (username_check["full_name"],)  ).fetchone()
+        if authorized_operator is None: return jsonify ( {"Message" : "Operator not registered."} ), 400
 
-    conn.commit()
-    conn.close()
-    access_token = create_access_token(identity=data["username"])  #isermame so token knows who it belongs to.
-    return jsonify ({"message" : "login sucessful" , "Username" : data["username"], "token": access_token})
+        conn.commit()
+        conn.close()
+        access_token = create_access_token(identity=data["username"])  #isermame so token knows who it belongs to.
+        return jsonify ({"message" : "login sucessful" , "Username" : data["username"], "token": access_token})
+    except KeyError as e:
+        return jsonify({"error: " f"Missing required field: {e}"}), 400
+    except Exception as e:
+        return jsonify({"error" : f"Server error {e}"}), 500
 
 
 """
@@ -209,12 +226,15 @@ from flask_jwt_extended import get_jwt #dunno what thsi is for, il ask later.
 @app.route("/logout" , methods=["POST"])
 @jwt_required()
 def logout():
-    token = get_jwt()["jti"]
-    conn = sqlite3.connect(ROLLS_DB_PATH)
-    conn.execute("INSERT INTO token_blocklist (token) VALUES (?)", (token,) ) 
-    conn.commit()
-    conn.close()
-    return jsonify({"Message" : "Logged Out sucessfully"})
+    try:
+        token = get_jwt()["jti"]
+        conn = sqlite3.connect(ROLLS_DB_PATH)
+        conn.execute("INSERT INTO token_blocklist (token) VALUES (?)", (token,) ) 
+        conn.commit()
+        conn.close()
+        return jsonify({"Message" : "Logged Out sucessfully"})
+    except Exception as e:
+        return jsonify({"error" : f"Server error: {e}"}), 500
 
 
 """
@@ -299,18 +319,21 @@ def add_roll():
     except Exception as e:
         return jsonify({"error" : f"Server error: {str(e)}" } ) , 500
     
-    #NOw do try and except on all routes.
+    
 
 
 @app.route("/get-roll", methods=["GET"])
 @jwt_required()
 def get_roll():
-    conn = sqlite3.connect(ROLLS_DB_PATH)
-    conn.row_factory = sqlite3.Row #Give row objects that behave like dictionaries
-    
-    rolls = conn.execute("SELECT * FROM rolls").fetchall()
-    conn.close()
-    return jsonify([dict(row) for row in rolls])
+    try:
+        conn = sqlite3.connect(ROLLS_DB_PATH)
+        conn.row_factory = sqlite3.Row #Give row objects that behave like dictionaries
+        
+        rolls = conn.execute("SELECT * FROM rolls").fetchall()
+        conn.close()
+        return jsonify([dict(row) for row in rolls])
+    except Exception as e:
+        return jsonify ({"error" : f"Server error: {e}"}) , 500
 
 
 def bundle_validation(top_roll, bottom_roll, installation_stand_number):
@@ -346,25 +369,30 @@ NOTE TO SELF TOP MSUT BE BIGGER THAN BOTTOM, CHOCK TYPE HAS TO BE FROM 1-6
 @app.route("/confirm-bundle", methods=["POST"] )
 @jwt_required()
 def confirm_bundle():
-    data = request.get_json()
-    conn = sqlite3.connect(ROLLS_DB_PATH)
+    try:
+        data = request.get_json()
+        conn = sqlite3.connect(ROLLS_DB_PATH)
 
-    #Validation 
-    top_roll, bottom_roll, installation_stand_number, top_bigger = bundle_validation(data["top_roll_id"], 
-                                                                                     data["bottom_roll_id"],  data["installation_stand_number"])
-    
-    if top_roll == "TOP ROLL MISSING": return jsonify ({"message" : "Top Roll dosen't exist, try again"}) , 400
-    if bottom_roll =="BOTTOM ROLL MISSING": return jsonify ({"message" : "Bottom Roll dosen't exist, try again"}) , 400
-    if installation_stand_number is False: return jsonify ({"message" : "Installation Stand Number, Invalid. Try again."}) , 400
-    if top_bigger is False: return jsonify ({"message" : "Top Roll diameter exceeds bottom roll diameter"}) , 400
+        #Validation 
+        top_roll, bottom_roll, installation_stand_number, top_bigger = bundle_validation(data["top_roll_id"], 
+                                                                                        data["bottom_roll_id"],  data["installation_stand_number"])
         
-    
+        if top_roll == "TOP ROLL MISSING": return jsonify ({"message" : "Top Roll dosen't exist, try again"}) , 400
+        if bottom_roll =="BOTTOM ROLL MISSING": return jsonify ({"message" : "Bottom Roll dosen't exist, try again"}) , 400
+        if installation_stand_number is False: return jsonify ({"message" : "Installation Stand Number, Invalid. Try again."}) , 400
+        if top_bigger is False: return jsonify ({"message" : "Top Roll diameter exceeds bottom roll diameter"}) , 400
+            
+        
 
-    conn.execute("INSERT INTO bundles (top_roll_id, bottom_roll_id, ds_chock, installation_stand_number) VALUES (?,?,?,?)", 
-                 (data["top_roll_id"], data["bottom_roll_id"], data["ds_chock"], data["installation_stand_number"]) )
-    conn.commit()
-    conn.close()
-    return jsonify({"message": "Bundle Confirmed"})
+        conn.execute("INSERT INTO bundles (top_roll_id, bottom_roll_id, ds_chock, installation_stand_number) VALUES (?,?,?,?)", 
+                    (data["top_roll_id"], data["bottom_roll_id"], data["ds_chock"], data["installation_stand_number"]) )
+        conn.commit()
+        conn.close()
+        return jsonify({"message": "Bundle Confirmed"})
+    except KeyError as e:
+        return jsonify ({"error" : f"Missign required field: {e}"}), 400
+    except Exception as e:
+        return jsonify ({"error" : f"Server error: {e}"}), 500
 
 
 
@@ -374,10 +402,13 @@ def confirm_bundle():
 @app.route("/get-bundle", methods=["GET"] )
 @jwt_required()
 def get_bundle():
-    conn = sqlite3.connect(ROLLS_DB_PATH)
-    bundles = conn.execute("SELECT * FROM bundles").fetchall()
-    conn.close()
-    return jsonify(bundles)
+    try:
+        conn = sqlite3.connect(ROLLS_DB_PATH)
+        bundles = conn.execute("SELECT * FROM bundles").fetchall()
+        conn.close()
+        return jsonify(bundles)
+    except Exception as e:
+        return jsonify({"error" : f"Server error {e}"}), 500
 
 
 init_db()
