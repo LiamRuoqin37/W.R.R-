@@ -465,7 +465,7 @@ init_db()
 
 #NOTE after project done. Implement login and accout process.
 
-app.run(debug =True, use_reloader=False, port=5001)   #use_reloader=False: For debugging purposes, get rid of after. Turns aff auto restart on save.
+app.run(host="0.0.0.0", port=5001)
 
 
 
