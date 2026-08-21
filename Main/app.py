@@ -348,7 +348,7 @@ def add_roll():
         cur.execute("INSERT INTO rolls (roll_id, position, prev_diameter, diameter, remaining, crown, finish, roll_class, dismantle_date) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)", 
                     (roll_id, position, data["prev_diameter"], data["diameter"], data["remaining"], data["crown"], data["finish"], data["roll_class"], data["dismantle_date"])
     )
-        conn.commit()
+        conn.commit() #Commit needed when you INSERT, UPDATE or DELETE
         conn.close()
 
         return jsonify({"Message": "Roll saved", "Roll ID": roll_id, "Position": position} )
@@ -374,6 +374,28 @@ def get_roll():
         return jsonify([dict(row) for row in rolls])
     except Exception as e:
         return jsonify ({"error" : f"Server error: {e}"}) , 500
+
+@app.route("/get-roll/<roll_id>", methods = ["GET"])
+@jwt_required()
+def get_roll_by_id(roll_id): #roll_id in the parameter — it comes from the URL. When you define the route as /get-roll/<roll_id>, Flask automatically takes whatever is in that part of the URL and passes it into your function as the roll_id variable.
+    try:
+        conn = get_db()
+        cur = conn.cursor(cursor_factory=RealDictCursor)   #Without this, psycopg2 returns row as plain tuple. RealDictCursor makes each row behave like a dictionary so you can access columns name like roll["roll_id"0]
+
+        roll = cur.execute("SELECT * FROM rolls WHERE roll_id = %s", (roll_id, ))
+        roll = cur.fetchone()
+
+        conn.close()
+
+        if roll is None: return jsonify({"error" : f"Roll {roll_id} not found"}), 404
+
+        return jsonify(dict(roll))  #Convert the row returned from the database into a python directory so jsonify can turn it into JSOn and send it bnack
+
+    except Exception as e:
+        return jsonify({"error" : f"Server error: {e}"}), 500
+        
+
+
 
 
 def bundle_validation(top_roll, bottom_roll, installation_stand_number):
