@@ -78,7 +78,8 @@ def init_db():
             crown REAL,
             finish TEXT,
             roll_class TEXT,
-            dismantle_date TEXT
+            dismantle_date TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  
         )
     """)
 
