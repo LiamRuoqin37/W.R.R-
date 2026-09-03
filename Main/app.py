@@ -5,15 +5,15 @@ import secrets #This is for the "JWT_secret_key"
 import os
 
 #Environment & PostgreSQL setup for creating DB connections.
-from db import get_db 
+from Main.db import get_db 
 #Validation functions to deal with potential human and server errors.
-from validation import roll_id_filter, validate_roll_id, validate_position, validate_numeric_field, bundle_validation
+from Main.validation import roll_id_filter, validate_roll_id, validate_position, validate_numeric_field, bundle_validation
 #Authorization routes
-from routes.auth import auth
+from Main.routes.auth import auth
 #Roll routes
-from routes.rolls import rolls
+from Main.routes.rolls import rolls
 #Roll Bundle routes
-from routes.bundles import bundles
+from Main.routes.bundles import bundles
 
 
 app = Flask(__name__)

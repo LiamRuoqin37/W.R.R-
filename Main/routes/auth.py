@@ -5,7 +5,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from psycopg2.extras import RealDictCursor
 
 
-from db import get_db
+from Main.db import get_db
 
 auth = Blueprint("auth", __name__)
 
