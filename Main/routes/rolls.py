@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required
 
 
 from Main.db import get_db
-from validation import validate_roll_id, validate_position, validate_numeric_field, roll_id_filter
+from Main.validation import validate_roll_id, validate_position, validate_numeric_field, roll_id_filter
 
 
 rolls = Blueprint("rolls", __name__)

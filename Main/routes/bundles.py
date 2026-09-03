@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required
 
 
 from Main.db import get_db
-from validation import bundle_validation 
+from Main.validation import bundle_validation 
 
 bundles = Blueprint("bundles",__name__)
 
