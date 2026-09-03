@@ -1,5 +1,6 @@
-from db import get_db
 from psycopg2.extras import RealDictCursor
+
+from Main.db import get_db
 
 
 #Functions that validate and spellchecks information inputted, to prevent ambiguous errors, minimize typos, and ensure industry standards are met.
