@@ -56,6 +56,37 @@ https://roll-shop-rechocking.onrender.com
 
 All database tables are automatically created on first run.
 
-## API end-points
+## API Endpoints
+
+### Authentication (auth.py)
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/add-authorized-operator` | Whitelist an operator by full name. Not case-sensitive.|
+| POST | `/add-operator` | Register an account for a authorized operator. |
+| POST | `/login` | Log in and receive a JWT (to access other endpoints).|
+| POST | `/logout` | Blocklist the current token, revoking access.|
+
+### Rolls (rolls.py)
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/add-roll` | Add a new roll with full specification data. |
+| GET | `/get-roll` | Retrieve all rolls currently in the database.|
+| GET | `/get-roll/<roll_id>` | Retrieve a specific roll by ID number and review its information. |
+
+### Bundles (bundles.py)
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/confirm-bundle` | Pair a top and bottom roll and assign to a finishing stand.|
+| GET | `/get-bundle` | Retrieve all bundles currently in the database.|
 
 ## Screenshots
+### Successful Login
+<img width="1010" height="563" alt="image" src="https://github.com/user-attachments/assets/05a8103a-e05a-4447-b1a1-64583887f5b4" />
+
+### Sample, Add Roll
+<img width="714" height="467" alt="image" src="https://github.com/user-attachments/assets/8f7a0c8d-b474-4e3f-89ff-0d23cc59d49f" />
+
+### Get roll
+
+
+
