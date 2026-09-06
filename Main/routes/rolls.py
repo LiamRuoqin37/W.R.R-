@@ -5,7 +5,7 @@ from flask_jwt_extended import jwt_required
 try:
     from Main.db import get_db
     from Main.validation import validate_roll_id, validate_position, validate_numeric_field, roll_id_filter
-    
+
 except ModuleNotFoundError:
     from db import get_db
     from validation import validate_roll_id, validate_position, validate_numeric_field, roll_id_filter
@@ -83,7 +83,7 @@ def get_roll():
 
 
 """
-This function is used by the operator to look up a specific roll in the database. 
+This function is used by the operator to look up a specific roll in the database. Always grabs the latest iteration in the database.
 """
 @rolls.route("/get-roll/<roll_id>", methods = ["GET"])
 @jwt_required()
@@ -92,7 +92,7 @@ def get_roll_by_id(roll_id):
         conn = get_db()
         cur = conn.cursor(cursor_factory=RealDictCursor)   
 
-        roll = cur.execute("SELECT * FROM rolls WHERE roll_id = %s", (roll_id, ))
+        roll = cur.execute("SELECT * FROM rolls WHERE roll_id = %s ORDER BY created_at DESC LIMIT 1", (roll_id, ))
         roll = cur.fetchone()
 
         conn.close()
