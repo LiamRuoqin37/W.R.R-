@@ -4,8 +4,10 @@ import bcrypt #for password.
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 from psycopg2.extras import RealDictCursor
 
-
-from Main.db import get_db
+try:
+    from Main.db import get_db
+except ModuleNotFoundError:
+    from db import get_db
 
 auth = Blueprint("auth", __name__)
 

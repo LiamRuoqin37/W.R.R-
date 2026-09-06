@@ -2,9 +2,13 @@ from flask import Blueprint, request, jsonify
 from psycopg2.extras import RealDictCursor
 from flask_jwt_extended import jwt_required
 
-
-from Main.db import get_db
-from Main.validation import validate_roll_id, validate_position, validate_numeric_field, roll_id_filter
+try:
+    from Main.db import get_db
+    from Main.validation import validate_roll_id, validate_position, validate_numeric_field, roll_id_filter
+    
+except ModuleNotFoundError:
+    from db import get_db
+    from validation import validate_roll_id, validate_position, validate_numeric_field, roll_id_filter
 
 
 rolls = Blueprint("rolls", __name__)

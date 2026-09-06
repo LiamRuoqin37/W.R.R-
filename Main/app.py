@@ -4,16 +4,24 @@ from psycopg2.extras import RealDictCursor
 import secrets #This is for the "JWT_secret_key"
 import os
 
-#Environment & PostgreSQL setup for creating DB connections.
-from Main.db import get_db 
-#Validation functions to deal with potential human and server errors.
-from Main.validation import roll_id_filter, validate_roll_id, validate_position, validate_numeric_field, bundle_validation
-#Authorization routes
-from Main.routes.auth import auth
-#Roll routes
-from Main.routes.rolls import rolls
-#Roll Bundle routes
-from Main.routes.bundles import bundles
+try:
+    #Environment & PostgreSQL setup for creating DB connections.
+    from Main.db import get_db 
+    #Validation functions to deal with potential human and server errors.
+    from Main.validation import roll_id_filter, validate_roll_id, validate_position, validate_numeric_field, bundle_validation
+    #Authorization routes
+    from Main.routes.auth import auth
+    #Roll routes
+    from Main.routes.rolls import rolls
+    #Roll Bundle routes
+    from Main.routes.bundles import bundles
+
+except ModuleNotFoundError: #Local Module.
+    from db import get_db
+    from validation import roll_id_filter, validate_roll_id, validate_position, validate_numeric_field, bundle_validation
+    from routes.auth import auth
+    from routes.rolls import rolls
+    from routes.bundles import bundles
 
 
 app = Flask(__name__)

@@ -3,8 +3,13 @@ from psycopg2.extras import RealDictCursor
 from flask_jwt_extended import jwt_required
 
 
-from Main.db import get_db
-from Main.validation import bundle_validation 
+try:
+    from Main.db import get_db
+    from Main.validation import bundle_validation 
+    
+except ModuleNotFoundError:
+    from db import get_db
+    from validation import bundle_validation 
 
 bundles = Blueprint("bundles",__name__)
 
