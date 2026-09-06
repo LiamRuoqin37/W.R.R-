@@ -82,6 +82,7 @@ def init_db():
     roll_class: TEXT.
     dismantle_date: TEXT.
     created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP, The exact time & date this roll was punched into the database.
+    Operator: The Opeartor who added roll to database.
     """
 
     cur.execute("""
@@ -96,7 +97,8 @@ def init_db():
             finish TEXT,
             roll_class TEXT,
             dismantle_date TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            Operator TEXT  
         )
     """)
 

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify 
 from psycopg2.extras import RealDictCursor
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required,get_jwt_identity
 
 try:
     from Main.db import get_db
@@ -48,10 +48,13 @@ def add_roll():
         if not validate_numeric_field(data["prev_diameter"]): return jsonify({"error": "invalid prev_diameter"}), 400
         if not validate_numeric_field(data["remaining"]): return jsonify({"error": "invalid remaining"}), 400
         if not validate_numeric_field(data["crown"]): return jsonify({"error": "invalid crown"}), 400
+
+        #Track the operator that is adding the roll.
+        operator = get_jwt_identity()
         
 
-        cur.execute("INSERT INTO rolls (roll_id, position, prev_diameter, diameter, remaining, crown, finish, roll_class, dismantle_date) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)", 
-                    (roll_id, position, data["prev_diameter"], data["diameter"], data["remaining"], data["crown"], data["finish"], data["roll_class"], data["dismantle_date"])
+        cur.execute("INSERT INTO rolls (roll_id, position, prev_diameter, diameter, remaining, crown, finish, roll_class, dismantle_date, operator) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s, %s)", 
+                    (roll_id, position, data["prev_diameter"], data["diameter"], data["remaining"], data["crown"], data["finish"], data["roll_class"], data["dismantle_date"], operator)
     )
         conn.commit() 
         conn.close()
