@@ -35,7 +35,19 @@ _Image Source: Analysis of roll stack deflection in a hot strip mill, Technical 
 This API is deployed and live on Render.
 https://roll-shop-rechocking.onrender.com
 
-## How to run locally
+## How to run quickly (quickstart)
+> [!IMPORTANT]
+> Prerequisites: Python 3, PostgreSQL, Postman (or any REST client compatible with Postman collections and environments).
+
+> [!NOTE]
+> Errors is most likely due to the render database expiring due to free tier limitations. I do my best to keep it active and up to date.
+
+1. Clone the repository.
+2. Import **"Work Roll Rechocking.postman_collection"** and **"Render.postman_environment.json"** into Postman. BE sure to enable the "Render" environment 
+
+All database tables are automatically created on first run.
+
+### How to run locally (if quickstart does not work)
 
 > [!IMPORTANT]
 > Prerequisites: Python 3, PostgreSQL, Postman (or any REST client compatible with Postman collections and environments).
