@@ -4,7 +4,7 @@
 > Due to facility confidentiality and competitive industry policy, sensitive information is **REDACTED**; details are available in my resume, and further technical details can be provided for job/internship evaluation purposes.
 
 ## What is this?
-This is a REST API for tracking work rolls sets in a industrial HSM (hot strip mill). 
+This is a backend REST API for tracking work rolls sets in a industrial HSM (hot strip mill). 
 This project handles roll spec data, pairing validation, and finishing stand assignments. This is all behind JWT-secured endpoints.
 
 This was my attempt at recreating the software used as an operator in the HSM department in **[REDACTED]**. This specific program is used to track every work roll that goes through the finishing stands- diameter, crown, position pairings. Mill operators can retrieve this data in real time from the other end to validate and install the new rolls onto the finishing mill. Work Rolls must meet industrial standards.
@@ -81,12 +81,17 @@ All database tables are automatically created on first run.
 
 ## Screenshots
 ### Successful Login
-<img width="1010" height="563" alt="image" src="https://github.com/user-attachments/assets/05a8103a-e05a-4447-b1a1-64583887f5b4" />
+<img width="1005" height="451" alt="image" src="https://github.com/user-attachments/assets/1d7838e2-dfd4-4831-a585-87421606ff20" />
+
 
 ### Sample, Add Roll
 <img width="714" height="467" alt="image" src="https://github.com/user-attachments/assets/8f7a0c8d-b474-4e3f-89ff-0d23cc59d49f" />
 
-### Get roll
+### Get roll By ID (f3000000) 
+<img width="485" height="578" alt="image" src="https://github.com/user-attachments/assets/f6f0ff66-1c68-45a0-8e33-f456b12c0d63" />
+
+### Sample Validation Error
+<img width="532" height="441" alt="image" src="https://github.com/user-attachments/assets/71c4f123-5f20-43b2-94f9-fe747b766967" />
 
 
 
