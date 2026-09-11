@@ -59,10 +59,10 @@ def bundle_validation(top_roll, bottom_roll, installation_stand_number):
 
     
      #Check to see if top and bottom rolls IDS actuallty EXIST in the database.
-    top_roll = cur.execute("SELECT * FROM rolls WHERE roll_id = %s", (top_roll, ) ) 
+    top_roll = cur.execute("SELECT * FROM rolls WHERE roll_id = %s ORDER BY created_at DESC LIMIT 1", (top_roll, ) ) 
     top_roll = cur.fetchone()
 
-    bottom_roll = cur.execute("SELECT * FROM rolls WHERE roll_id = %s", (bottom_roll, ) )
+    bottom_roll = cur.execute("SELECT * FROM rolls WHERE roll_id = %s ORDER BY created_at DESC LIMIT 1", (bottom_roll, ) )
     bottom_roll = cur.fetchone()
 
     if top_roll is None: return "TOP ROLL MISSING", None, None, None
