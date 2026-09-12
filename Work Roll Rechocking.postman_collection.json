@@ -1,7 +1,7 @@
 {
   "info": {
-    "_postman_id": "0b976b9d-e23e-4a43-82e5-a30af6be26b4",
-    "name": "Work Roll Rechocking",
+    "_postman_id": "f2556b42-222d-4b55-803b-dcfb5a3623c6",
+    "name": "Work Roll Rechocking Copy",
     "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "55886890"
@@ -13,14 +13,10 @@
         {
           "listen": "test",
           "script": {
-            "exec": [
-              "pm.test(\"Status code is 200\", function () {",
-              "    pm.response.to.have.status(200);",
-              "});"
-            ],
             "type": "text/javascript",
-            "packages": {},
-            "requests": {}
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
+            ]
           }
         }
       ],
@@ -40,13 +36,12 @@
           {
             "key": "Authorization",
             "value": "{{bearer_token_0dmk}}",
-            "type": "text",
             "disabled": true
           }
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"roll_id\": \"F300000\",\r\n    \"position\": \"TOP\",\r\n    \"prev_diameter\": 600.000,\r\n    \"diameter\": 12313,\r\n    \"remaining\": 0.500,\r\n    \"crown\": -0.050,\r\n    \"finish\": \"G\",\r\n    \"roll_class\": \"1 DEFAULT\",\r\n    \"dismantle_date\": \"14-JUN-2026 22:27\"\r\n}",
+          "raw": "{\r\n    \"roll_id\": \"F123456\",\r\n    \"position\": \"Bottom\",\r\n    \"prev_diameter\": 123.456,\r\n    \"diameter\": 12345,\r\n    \"remaining\": 0.500,\r\n    \"crown\": -0.050,\r\n    \"finish\": \"Ground\",\r\n    \"roll_class\": \"1 DEFAULT\",\r\n    \"dismantle_date\": \"14-JUN-2026 22:27\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -132,15 +127,6 @@
             "disabled": true
           }
         ],
-        "body": {
-          "mode": "raw",
-          "raw": "",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
         "url": {
           "raw": "{{base_url}}/get-roll",
           "host": [
@@ -171,7 +157,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"top_roll_id\": \"F300000\",\r\n    \"bottom_roll_id\": \"F166779\",\r\n    \"ds_chock\": \"F40DT\",\r\n    \"installation_stand_number\": 4\r\n}",
+          "raw": "{\r\n    \"top_roll_id\": \"F300000\",\r\n    \"bottom_roll_id\": \"F123456\",\r\n    \"ds_chock\": \"F40DT\",\r\n    \"installation_stand_number\": 4\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -246,7 +232,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"full_name\": \"Liam Wu\"\r\n}",
+          "raw": "{\r\n    \"full_name\": \"John Doe\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -282,7 +268,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"full_name\": \"Liam Wu\",\r\n    \"username\": \"LiamWu\",\r\n    \"password\": \"LWu\",\r\n    \"crew\": \"B\",\r\n    \"shift\": 2\r\n}",
+          "raw": "{\r\n    \"full_name\": \"john doe\",\r\n    \"username\": \"JohnDOE\",\r\n    \"password\": \"JDoe\",\r\n    \"crew\": \"A\",\r\n    \"shift\": 2\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -307,13 +293,10 @@
         {
           "listen": "test",
           "script": {
-            "exec": [
-              "const response = pm.response.json();\r",
-              "pm.environment.set(\"token\", response.token);"
-            ],
             "type": "text/javascript",
-            "packages": {},
-            "requests": {}
+            "exec": [
+              "const response = pm.response.json();\r\npm.environment.set(\"token\", response.token);"
+            ]
           }
         }
       ],
@@ -322,7 +305,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"username\": \"LiamWu\",\r\n    \"password\": \"LWu\"\r\n}\r\n",
+          "raw": "{\r\n    \"username\": \"JohnDOE\",\r\n    \"password\": \"JDoe\"\r\n}\r\n",
           "options": {
             "raw": {
               "language": "json"
@@ -375,16 +358,13 @@
   ],
   "variable": [
     {
-      "key": "bearer_token_0dmk",
-      "secret": true
+      "key": "bearer_token_0dmk"
     },
     {
-      "key": "json_web_token_009v",
-      "secret": true
+      "key": "json_web_token_009v"
     },
     {
-      "key": "supabase_service_role_api_key_009v",
-      "secret": true
+      "key": "supabase_service_role_api_key_009v"
     }
   ]
 }
